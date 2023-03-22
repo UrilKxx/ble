@@ -1,5 +1,6 @@
 import sqlite3 as sl
 import time
+from typing import List
 
 from Device import Device
 from Storage import Storage
@@ -57,7 +58,7 @@ class SQLiteStorage(Storage):
         cursor.execute(query)
 
     @con_db
-    def get_devices(self, connection):
+    def get_devices(self, connection) -> List[Device]:
         devices = []
         cursor = connection.cursor()
         data = cursor.execute("SELECT * FROM devices")
@@ -66,24 +67,27 @@ class SQLiteStorage(Storage):
         return devices
 
     @con_db
-    def add_device(self, connection, device: Device):
+    def add_device(self, connection, device: Device) -> Device:
         cursor = connection.cursor()
         cursor.execute(
             f"INSERT INTO devices (mac, avg_battery, avg_temp, avg_humidity, online) VALUES ('{device.mac}', {device.avg_battery}, {device.avg_temperature}, {device.avg_humidity}, {device.is_online})")
         connection.commit()
+        return device
 
     @con_db
-    def update_device(self, connection, device: Device):
+    def update_device(self, connection, device: Device) -> Device:
         cursor = connection.cursor()
         cursor.execute(
             f"UPDATE devices SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature}, avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
+        return device
 
     @con_db
-    def update_online_device(self, connection, device: Device):
+    def update_online_device(self, connection, device: Device) -> Device:
         cursor = connection.cursor()
         cursor.execute(f"UPDATE devices SET online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
+        return device
 
     @con_db
     def delete_device(self, connection, device: Device):

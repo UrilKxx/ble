@@ -1,4 +1,7 @@
 from abc import abstractmethod
+from typing import List
+
+from Device import Device
 
 
 class Storage(object):
@@ -8,23 +11,27 @@ class Storage(object):
         ...
 
     @abstractmethod
-    def get_devices(self):
+    def get_devices(self) -> List[Device]:
         ...
 
     @abstractmethod
-    def add_device(self):
+    def add_device(self, device: Device) -> Device:
         ...
 
     @abstractmethod
-    def update_device(self):
+    def add_device(self, mac: str) -> Device:
         ...
 
     @abstractmethod
-    def update_online_device(self):
+    def update_device(self, device: Device) -> Device:
         ...
 
     @abstractmethod
-    def delete_device(self):
+    def update_online_device(self, device: Device, online: bool) -> Device:
+        ...
+
+    @abstractmethod
+    def delete_device(self, device: Device):
         ...
 
     @abstractmethod
@@ -34,4 +41,3 @@ class Storage(object):
     @abstractmethod
     def get_statistic_data(self):
         ...
-
