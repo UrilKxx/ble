@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import List
 
-from Device import Device
+from storage.Device import Device
 
 
-class Storage(object):
+class Storage(ABC):
 
     @abstractmethod
     def create_db(self):
@@ -15,11 +15,11 @@ class Storage(object):
         ...
 
     @abstractmethod
-    def add_device(self, device: Device) -> Device:
+    def add_device(self, mac: str) -> Device:
         ...
 
     @abstractmethod
-    def add_device(self, mac: str) -> Device:
+    def get_device(self, mac: str) -> Device:
         ...
 
     @abstractmethod

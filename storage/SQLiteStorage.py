@@ -2,36 +2,46 @@ import sqlite3 as sl
 import time
 from typing import List
 
-from Device import Device
-from Storage import Storage
+from storage.Device import Device
+from storage.Storage import Storage
+
+
+def con_db(func):
+    def wrapper(*args, **kwargs):
+        con = None
+        db = args[0].db
+        try:
+            con = sl.connect(db)
+            print("connect to " + db)
+            value = func(*args, con, **kwargs)
+            return value
+        except Exception as e:
+            print("some get wrong")
+            print(e)
+            return e
+        finally:
+            print("close connect to " + db)
+            con.close()
+
+    return wrapper
 
 
 class SQLiteStorage(Storage):
 
-    def __int__(self, db: str):
+    def __init__(self, db: str = 'devices.db'):
         self._db = db
+        # if self._db not in os.listdir():
+        #     self.create_db()
 
-    def con_db(self, func):
-        def wrapper(*args, **kwargs):
-            try:
-                con = sl.connect(self._db)
-                print("connect to devices.db")
-                value = func(con, *args, **kwargs)
-                return value
-            except Exception as e:
-                print("some get wrong")
-                return e
-            finally:
-                print("close connect to devices.db")
-                con.close()
-
-        return wrapper
+    @property
+    def db(self) -> str:
+        return self._db
 
     @con_db
     def create_db(self, connection):
         cursor = connection.cursor()
         query = '''
-    create table devices
+    create table 'devices'
     (
         mac text not null unique unique,
         avg_battery REAL default 0,
@@ -61,53 +71,59 @@ class SQLiteStorage(Storage):
     def get_devices(self, connection) -> List[Device]:
         devices = []
         cursor = connection.cursor()
-        data = cursor.execute("SELECT * FROM devices")
+        data = cursor.execute("SELECT * FROM 'devices'")
         for row in data:
             devices.append(Device(*row))
         return devices
 
     @con_db
-    def add_device(self, connection, device: Device) -> Device:
+    def get_device(self, mac: str, connection) -> Device:
+        cursor = connection.cursor()
+        data = cursor.execute(f"SELECT * FROM 'devices' WHERE mac = '{mac}'")
+        return Device(*data[0])
+
+    @con_db
+    def add_device(self, mac: str, connection) -> Device:
         cursor = connection.cursor()
         cursor.execute(
-            f"INSERT INTO devices (mac, avg_battery, avg_temp, avg_humidity, online) VALUES ('{device.mac}', {device.avg_battery}, {device.avg_temperature}, {device.avg_humidity}, {device.is_online})")
+            f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
+        connection.commit()
+        return self.get_device(mac)
+
+    @con_db
+    def update_device(self, device: Device, connection) -> Device:
+        cursor = connection.cursor()
+        cursor.execute(
+            f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature}, avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
         return device
 
     @con_db
-    def update_device(self, connection, device: Device) -> Device:
+    def update_online_device(self, device: Device, connection) -> Device:
         cursor = connection.cursor()
-        cursor.execute(
-            f"UPDATE devices SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature}, avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
+        cursor.execute(f"UPDATE 'devices' SET online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
         return device
 
     @con_db
-    def update_online_device(self, connection, device: Device) -> Device:
+    def delete_device(self, device: Device, connection):
         cursor = connection.cursor()
-        cursor.execute(f"UPDATE devices SET online = {device.is_online} WHERE mac = '{device.mac}'")
-        connection.commit()
-        return device
-
-    @con_db
-    def delete_device(self, connection, device: Device):
-        cursor = connection.cursor()
-        cursor.execute(f"DELETE from devices WHERE mac = '{device.mac}'")
+        cursor.execute(f"DELETE from 'devices' WHERE mac = '{device.mac}'")
         connection.commit()
 
     @con_db
-    def add_statistic_data(self, connection, mac: str, temperature: float = 0,
-                           humidity: float = 0, battery: float = 0):
+    def add_statistic_data(self, mac: str, temperature: float = 0,
+                           humidity: float = 0, battery: float = 0, connection=None):
         cursor = connection.cursor()
         cursor.execute(
-            f"INSERT INTO statistic_data (divice_mac, time, temperature, humidity, battery) VALUES ('{mac}', '{time.ctime()}', {temperature}, {humidity}, {battery})")
+            f"INSERT INTO 'statistic_data' (divice_mac, time, temperature, humidity, battery) VALUES ('{mac}', '{time.ctime()}', {temperature}, {humidity}, {battery})")
         connection.commit()
 
     @con_db
     def get_statistic_data(self, connection):
         statistic_data = []
         cursor = connection.cursor()
-        data = cursor.execute("SELECT * FROM statistic_data")
+        data = cursor.execute("SELECT * FROM 'statistic_data'")
         for row in data:
             statistic_data.append(row)
         return statistic_data
