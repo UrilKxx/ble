@@ -1,9 +1,14 @@
+import os
 import sqlite3 as sl
 import time
 from typing import List
 
+from logger import logger as logger
+
 from storage.Device import Device
 from storage.Storage import Storage
+
+logger = logger.get_logger(__name__)
 
 
 def con_db(func):
@@ -12,15 +17,14 @@ def con_db(func):
         db = args[0].db
         try:
             con = sl.connect(db)
-            print("connect to " + db)
-            value = func(*args, con, **kwargs)
+            logger.info("Connect to " + db)
+            value = func(*args, connection=con, **kwargs)
             return value
         except Exception as e:
-            print("some get wrong")
-            print(e)
+            logger.error(f"Error connecting to database {db}: {str(e)}")
             return e
         finally:
-            print("close connect to " + db)
+            logger.info("Close connect to " + db)
             con.close()
 
     return wrapper

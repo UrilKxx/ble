@@ -7,6 +7,7 @@ from scanner.ScanDelegate import ScanDelegate
 from storage.SQLiteStorage import SQLiteStorage
 from storage.Storage import Storage
 
+logger = logger.get_logger(__name__)
 
 # from bluepy.btle import BTLEException
 
@@ -22,9 +23,12 @@ class Embedding(object):
     #         self._pollers.append(MiTempBtPoller(d.mac, BluepyBackend, self._timeout))
 
     def scan_devices(self) -> List:
+        logger.info(f"Start scan devices ...")
         devices = list()
         for d in self._scanner.scan():
+            logger.info(f"Device found - mac: {d.addr}, type: {d.addrType}, RSSI: {d.rssi}")
             devices.append({"mac": d.addr, "type": d.addrType, "RSSI": d.rssi})
+        logger.info(f" {len(devices)} devices found")
         return devices
 
     def add_device(self, mac) -> Device:
