@@ -20,6 +20,10 @@ class Device(object):
     def avg_battery(self):
         return self._avg_battery
 
+    @avg_battery.setter
+    def avg_battery(self, value):
+        self._avg_battery = value
+
     @property
     def avg_temperature(self):
         return self._avg_temperature
@@ -43,3 +47,15 @@ class Device(object):
             "avg_humidity": self._avg_humidity,
             "is_online": self.is_online
         }.items()
+
+    @avg_temperature.setter
+    def avg_temperature(self, value):
+        self._avg_temperature = value
+
+    @avg_humidity.setter
+    def avg_humidity(self, value):
+        self._avg_humidity = value
+
+    @is_online.setter
+    def is_online(self, value):
+        self._is_online = value
