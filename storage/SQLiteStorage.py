@@ -124,7 +124,7 @@ class SQLiteStorage(Storage):
         connection.commit()
 
     @con_db
-    def get_statistic_data(self, connection):
+    def get_statistic_data(self, mac: str, connection=None):
         statistic_data = []
         cursor = connection.cursor()
         data = cursor.execute("SELECT * FROM 'statistic_data'")

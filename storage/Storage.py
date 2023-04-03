@@ -35,9 +35,10 @@ class Storage(ABC):
         ...
 
     @abstractmethod
-    def add_statistic_data(self):
+    def add_statistic_data(self, mac: str, temperature: float = 0,
+                           humidity: float = 0, battery: float = 0):
         ...
 
     @abstractmethod
-    def get_statistic_data(self):
+    def get_statistic_data(self, mac: str):
         ...
