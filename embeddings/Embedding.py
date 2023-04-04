@@ -75,13 +75,13 @@ class Embedding(object):
         devices = list()
         try:
             scan_dev = self._scanner.scan(passive=True)
+            for d in scan_dev:
+                logger.info(f"Device found - mac: {d.addr}, type: {d.addrType}, RSSI: {d.rssi}")
+                devices.append({"mac": d.addr, "type": d.addrType, "RSSI": d.rssi})
+            logger.info(f" {len(devices)} devices found")
         except Exception as e:
             logger.error(f"Error while scan devices: {str(e)} ")
 
-        for d in scan_dev:
-            logger.info(f"Device found - mac: {d.addr}, type: {d.addrType}, RSSI: {d.rssi}")
-            devices.append({"mac": d.addr, "type": d.addrType, "RSSI": d.rssi})
-        logger.info(f" {len(devices)} devices found")
         return devices
 
     def add_device(self, mac) -> Device:
