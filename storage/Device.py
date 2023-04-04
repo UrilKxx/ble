@@ -6,7 +6,7 @@ class Device(object):
                  avg_temperature: float = 0.0,
                  avg_humidity: float = 0.0,
                  is_online: bool = False):
-        self._mac: str = mac
+        self._mac: str = mac.upper()
         self._avg_battery: float = avg_battery
         self._avg_temperature: float = avg_temperature
         self._avg_humidity: float = avg_humidity
