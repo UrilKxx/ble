@@ -1,4 +1,7 @@
-from bluepy.btle import Scanner, DefaultDelegate
+from bluepy.btle import DefaultDelegate
+from logger.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class ScanDelegate(DefaultDelegate):
@@ -7,6 +10,6 @@ class ScanDelegate(DefaultDelegate):
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
         if isNewDev:
-            print("Discovered device", dev.addr)
+            logger.info(f"Discovered device {dev.addr}")
         elif isNewData:
-            print("Received new data from", dev.addr)
+            logger.info(f"Received new data from {dev.addr}")

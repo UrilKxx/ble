@@ -1,7 +1,6 @@
 import threading
 import time
 
-from logger import logger as logger
 from btlewrap.bluepy import BluepyBackend
 from bluepy.btle import BTLEException
 from typing import List
@@ -14,8 +13,9 @@ from scanner.ScanDelegate import ScanDelegate
 from storage.Device import Device
 from storage.SQLiteStorage import SQLiteStorage
 from storage.Storage import Storage
+from logger.logger import get_logger
 
-logger = logger.get_logger(__name__)
+logger = get_logger(__name__)
 
 
 class Embedding(object):
