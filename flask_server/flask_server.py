@@ -1,7 +1,6 @@
 import json
 
-from flask import Flask, request
-from flask import Response
+from flask import Flask, request, Response
 from flask_api import status
 
 from embeddings.Embedding import Embedding
