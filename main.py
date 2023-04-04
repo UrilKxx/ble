@@ -1,7 +1,7 @@
 import subprocess
 import argparse
 
-from flask_server import create_app
+from flask.flask_server import create_app
 
 parser = argparse.ArgumentParser(description='ble args like port, kill process with port')
 parser.add_argument(
