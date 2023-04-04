@@ -63,15 +63,16 @@ class SQLiteStorage(Storage):
     def get_device(self, mac: str, connection=None) -> Device:
         cursor = connection.cursor()
         data = cursor.execute(f"SELECT * FROM 'devices' WHERE mac = '{mac}'")
-        return Device(*data[0])
+        for row in data:
+            return Device(*row)
 
     @con_db
     def add_device(self, mac: str, connection=None) -> Device:
         cursor = connection.cursor()
-        cursor.execute(
-            f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
+        cursor.execute(f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
         connection.commit()
-        return self.get_device(mac)
+        d = self.get_device(mac)
+        return d
 
     @con_db
     def update_device(self, device: Device, connection=None) -> Device:
@@ -87,6 +88,14 @@ class SQLiteStorage(Storage):
         cursor.execute(f"UPDATE 'devices' SET online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
         return device
+
+    def get_online_devices(self, connection=None) -> List[Device]:
+        devices = []
+        cursor = connection.cursor()
+        data = cursor.execute("SELECT * FROM 'devices' where online = 1")
+        for row in data:
+            devices.append(Device(*row))
+        return devices
 
     @con_db
     def delete_device(self, device: Device, connection=None):

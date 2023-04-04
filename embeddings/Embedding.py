@@ -24,8 +24,8 @@ class Embedding(object):
         self._storage: Storage = storage
         self._timeout = timeout
         self._scanner = Scanner().withDelegate(ScanDelegate())
-        thr = threading.Thread(target=self.update_devices_data, daemon=True, name='update_devices_data')
-        thr.start()
+        # thr = threading.Thread(target=self.update_devices_data, daemon=True, name='update_devices_data')
+        # thr.start()
 
     @property
     def storage(self):
@@ -73,7 +73,12 @@ class Embedding(object):
     def scan_devices(self) -> List:
         logger.info(f"Start scan devices ...")
         devices = list()
-        for d in self._scanner.scan():
+        try:
+            scan_dev = self._scanner.scan(passive=True)
+        except Exception as e:
+            logger.error(f"Error while scan devices: {str(e)} ")
+
+        for d in scan_dev:
             logger.info(f"Device found - mac: {d.addr}, type: {d.addrType}, RSSI: {d.rssi}")
             devices.append({"mac": d.addr, "type": d.addrType, "RSSI": d.rssi})
         logger.info(f" {len(devices)} devices found")
@@ -86,8 +91,7 @@ class Embedding(object):
         return self._storage.get_devices()
 
     def get_online_devices(self) -> List:
-        # return self._storage.
-        ...
+        return self._storage.get_devices()
 
     def get_device(self, mac) -> Device:
         return self._storage.get_device(mac)

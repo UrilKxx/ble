@@ -31,6 +31,10 @@ class Storage(ABC):
         ...
 
     @abstractmethod
+    def get_online_devices(self) -> List[Device]:
+        ...
+
+    @abstractmethod
     def delete_device(self, device: Device):
         ...
 
