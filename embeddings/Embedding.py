@@ -6,8 +6,8 @@ from bluepy.btle import BTLEException
 from typing import List
 from bluepy.btle import Scanner
 
-from mitemp.mitemp_bt.mitemp_bt_poller import MiTempBtPoller
-from mitemp.mitemp_bt.mitemp_bt_poller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
+from mitemp.mitemp_bt_poller import MiTempBtPoller
+from mitemp.mitemp_bt_poller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
 
 from scanner.ScanDelegate import ScanDelegate
 from storage.Device import Device
