@@ -1,11 +1,11 @@
 import os
 import sqlite3 as sl
-import time
-from typing import List, Any
+import datetime
+from typing import List
 
+from logger.logger import get_logger
 from storage.Device import Device
 from storage.Storage import Storage
-from logger.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -54,6 +54,7 @@ class SQLiteStorage(Storage):
         cursor.execute('''create table statistic_data ( id integer not null primary key autoincrement unique,
                divice_mac TEXT not null constraint statistic_data_devices_mac_fk references devices (mac), time TEXT not null,
               temperature REAL not null, humidity real not null, battery REAL not null);''')
+        connection.commit()
 
     @con_db
     def get_devices(self, connection=None) -> List[Device]:
@@ -130,14 +131,15 @@ class SQLiteStorage(Storage):
         cursor = connection.cursor()
         cursor.execute(
             f"INSERT INTO 'statistic_data' (divice_mac, time, temperature, humidity, battery)"
-            f" VALUES ('{mac}', '{time.ctime()}', {temperature}, {humidity}, {battery})")
+            f" VALUES ('{mac}', '{datetime.datetime.now()}', {temperature}, {humidity}, {battery})")
         connection.commit()
 
     @con_db
     def get_statistic_data(self, mac: str, connection=None):
         statistic_data = []
         cursor = connection.cursor()
-        data = cursor.execute(f"SELECT * FROM 'statistic_data' where divice_mac = '{mac}'")
+        data = cursor.execute(f"SELECT * FROM 'statistic_data' where divice_mac = '{mac}' and"
+                              f" time like '{datetime.datetime.now().date()}%'")
         for row in data:
             statistic_data.append(row)
         return statistic_data
