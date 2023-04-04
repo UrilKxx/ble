@@ -91,7 +91,7 @@ class Embedding(object):
         return self._storage.get_devices()
 
     def get_online_devices(self) -> List:
-        return self._storage.get_devices()
+        return self._storage.get_online_devices()
 
     def get_device(self, mac) -> Device:
         return self._storage.get_device(mac)

@@ -71,8 +71,7 @@ class SQLiteStorage(Storage):
         cursor = connection.cursor()
         cursor.execute(f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
         connection.commit()
-        d = self.get_device(mac)
-        return d
+        return self.get_device(mac)
 
     @con_db
     def update_device(self, device: Device, connection=None) -> Device:
@@ -89,6 +88,7 @@ class SQLiteStorage(Storage):
         connection.commit()
         return device
 
+    @con_db
     def get_online_devices(self, connection=None) -> List[Device]:
         devices = []
         cursor = connection.cursor()
