@@ -35,7 +35,7 @@ class Storage(ABC):
         ...
 
     @abstractmethod
-    def delete_device(self, device: Device):
+    def delete_device(self, device: Device) -> bool:
         ...
 
     @abstractmethod

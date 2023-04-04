@@ -24,22 +24,22 @@ class Embedding(object):
         self._storage: Storage = storage
         self._timeout = timeout
         self._scanner = Scanner().withDelegate(ScanDelegate())
-        # thr = threading.Thread(target=self.update_devices_data, daemon=True, name='update_devices_data')
-        # thr.start()
+        thr = threading.Thread(target=self._collect_statistic_data, daemon=True, name='update_devices_data')
+        thr.start()
 
     @property
     def storage(self):
         return self._storage
 
-    def update_devices_data(self, timeout=10):
+    def _collect_statistic_data(self, timeout=10):
         logger.info(f"Start thread update devices data")
         while True:
             for d in self._storage.get_devices():
-                self.get_device_info(d)
+                self.update_device_info(d)
                 self._storage.update_device(d)
             time.sleep(timeout)
 
-    def get_device_info(self, device: Device):
+    def update_device_info(self, device: Device):
         poller = MiTempBtPoller(device.mac, BluepyBackend, ble_timeout=self._timeout)
         try:
             temperature = poller.parameter_value(MI_TEMPERATURE)
@@ -48,7 +48,7 @@ class Embedding(object):
             logger.info(f"Statistic data from device "
                         f"{device.mac} - temperature {temperature} - humidity {humidity} - battery {battery}")
             self._storage.add_statistic_data(device.mac, temperature, humidity, battery)
-            stat_data = self.get_stat(device)
+            stat_data = self._get_stat(device)
             avg_temperature = 0
             avg_humidity = 0
             avg_battery = 0
@@ -96,5 +96,8 @@ class Embedding(object):
     def get_device(self, mac) -> Device:
         return self._storage.get_device(mac)
 
-    def get_stat(self, device: Device) -> List:
+    def _get_stat(self, device: Device) -> List:
         return self._storage.get_statistic_data(device.mac)
+
+    def delete_device(self, device: Device):
+        return self._storage.delete_device(device)

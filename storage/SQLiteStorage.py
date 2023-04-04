@@ -1,7 +1,7 @@
 import os
 import sqlite3 as sl
 import time
-from typing import List
+from typing import List, Any
 
 from storage.Device import Device
 from storage.Storage import Storage
@@ -19,12 +19,17 @@ def con_db(func):
             logger.info("Connect to " + db)
             value = func(*args, **kwargs, connection=con)
             return value
+        except sl.Error as e:
+            if con:
+                con.rollback()
+            logger.error(f"Error during query: {str(e)}")
         except Exception as e:
             logger.error(f"Error connecting to database {db}: {str(e)}")
             return e
         finally:
-            logger.info("Close connect to " + db)
-            con.close()
+            if con:
+                logger.info("Close connect to " + db)
+                con.close()
 
     return wrapper
 
@@ -67,19 +72,29 @@ class SQLiteStorage(Storage):
             return Device(*row)
 
     @con_db
-    def add_device(self, mac: str, connection=None) -> Device:
+    def add_device(self, mac: str, connection=None) -> Exception | None:
         cursor = connection.cursor()
         cursor.execute(f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
         connection.commit()
-        return self.get_device(mac)
+        if cursor.rowcount > 0:
+            logger.info(f"Adding device {mac} success")
+            return self.get_device(mac)
+        else:
+            logger.info(f"Adding device {mac} fail")
+            return None
 
     @con_db
     def update_device(self, device: Device, connection=None) -> Device:
         cursor = connection.cursor()
-        cursor.execute(
-            f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature}, avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
+        cursor.execute(f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature},"
+                       f" avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
-        return device
+        if cursor.rowcount > 0:
+            logger.info(f"Updating device {device.mac} success")
+            return device
+        else:
+            logger.info(f"Updating device {device.mac} fail")
+            return None
 
     @con_db
     def update_online_device(self, device: Device, connection=None) -> Device:
@@ -98,10 +113,16 @@ class SQLiteStorage(Storage):
         return devices
 
     @con_db
-    def delete_device(self, device: Device, connection=None):
+    def delete_device(self, device: Device, connection=None) -> bool:
         cursor = connection.cursor()
         cursor.execute(f"DELETE from 'devices' WHERE mac = '{device.mac}'")
         connection.commit()
+        if cursor.rowcount > 0:
+            logger.info(f"Deleting device {device.mac} success")
+            return True
+        else:
+            logger.info(f"Deleting device {device.mac} fail")
+            return False
 
     @con_db
     def add_statistic_data(self, mac: str, temperature: float = 0,
