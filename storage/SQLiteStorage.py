@@ -90,12 +90,8 @@ class SQLiteStorage(Storage):
         cursor.execute(f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature},"
                        f" avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
         connection.commit()
-        if cursor.rowcount > 0:
-            logger.info(f"Updating device {device.mac} success")
-            return device
-        else:
-            logger.info(f"Updating device {device.mac} fail")
-            return None
+        logger.info(f"Updating device {device.mac} success")
+        return device
 
     @con_db
     def update_online_device(self, device: Device, connection=None) -> Device:
