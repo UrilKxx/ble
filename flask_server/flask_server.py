@@ -23,7 +23,7 @@ def create_app():
         devices = embeddings.get_devices()
         if devices.count == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return json.dumps([json.loads(str(d)) for d in devices])
+        return Response(json.dumps([json.loads(str(d)) for d in devices]), content_type='application/json')
 
     @app.route('/devices/<mac>', methods=['GET'])
     def get_device(mac: str):
@@ -54,6 +54,6 @@ def create_app():
         devices = embeddings.get_online_devices()
         if devices.count == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return json.dumps([json.loads(str(d)) for d in devices])
+        return Response(json.dumps([json.loads(str(d)) for d in devices]), content_type='application/json')
 
     return app
