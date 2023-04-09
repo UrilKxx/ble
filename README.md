@@ -13,23 +13,27 @@ Simple flask API, which in background scans Xiaomi BLE Temperature and Humidity 
 ***mitemp*** module based on [Xiaomi BLE Temperature and Humidity Sensor Bluetooth To MQTT gateway](https://github.com/algirdasc/xiaomi-ble-mqtt "GitHub")
 
 # Installation (*Work just on linux*)
+***Clone code***
+```bash
+git clone https://github.com/UrilKxx/ble.git
+cd ble
+```
+***to make ble work***
+```bash
+sudo apt-get install libglib2.0-dev
+```
 ## Install requirements packages
 ***From requirements.txt***
 ```bash
 sudo pip3 install -r requirements.txt
 ```
-***From requirements.txt*** 
+***Terminal***
 ```bash
 sudo pip3 install bluepy
 sudo pip3 install btlewrap
 sudo pip3 install logger
 sudo pip3 install Flask
 sudo pip3 install Flask-API
-```
-***Clone code***
-```bash
-git clone https://github.com/UrilKxx/ble.git
-cd ble
 ```
 # Run
 To view help run
