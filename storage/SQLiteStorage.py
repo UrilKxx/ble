@@ -73,7 +73,7 @@ class SQLiteStorage(Storage):
             return Device(*row)
 
     @con_db
-    def add_device(self, mac: str, connection=None) -> Exception | None:
+    def add_device(self, mac: str, connection=None) -> Exception | Device | None:
         cursor = connection.cursor()
         cursor.execute(f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
         connection.commit()
@@ -88,7 +88,8 @@ class SQLiteStorage(Storage):
     def update_device(self, device: Device, connection=None) -> Device:
         cursor = connection.cursor()
         cursor.execute(f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature},"
-                       f" avg_humidity = {device.avg_humidity}, online = {device.is_online} WHERE mac = '{device.mac}'")
+                       f" avg_humidity = {device.avg_humidity}, online = {int(device.is_online)}"
+                       f" WHERE mac = '{device.mac}'")
         connection.commit()
         logger.info(f"Updating device {device.mac} success")
         return device
@@ -96,7 +97,7 @@ class SQLiteStorage(Storage):
     @con_db
     def update_online_device(self, device: Device, connection=None) -> Device:
         cursor = connection.cursor()
-        cursor.execute(f"UPDATE 'devices' SET online = {device.is_online} WHERE mac = '{device.mac}'")
+        cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
         connection.commit()
         return device
 
