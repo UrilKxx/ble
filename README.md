@@ -1,5 +1,5 @@
 # About
-Simple flask API, which in background scans Xiaomi BLE Temperature and Humidity sensors and put in SQLite DB. 
+ Simple Flask API, which in the background scans Xiaomi BLE temperature and humidity sensors and puts them in SQLite database. 
 
 | Specs                | []()                                                                                                                                                                                                                        |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
